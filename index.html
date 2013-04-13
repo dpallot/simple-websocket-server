@@ -65,7 +65,7 @@ class SimpleEcho(WebSocket):
         print self.address, 'closed'
 
 server = SimpleWebSocketServer('', 8000, SimpleEcho)
-server.serverforever()
+server.serveforever()
 </code></pre>
 
 <p>2) Run your code</p>
@@ -122,7 +122,7 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 <p>def handleMessage(): gets called when there is an incoming message from the client endpoint</p>
 
 <ul>
-<li>self.opcode: the WebSocket frame type (TEXT, BINARY, PING, PONG)</li>
+<li>self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)</li>
 <li>self.data: bytearray payload or None if there was no payload</li>
 <li>self.address: address port tuple of the endpoint</li>
 <li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)</li>
