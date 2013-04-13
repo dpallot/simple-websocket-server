@@ -5,7 +5,7 @@
 Supports
   - Hixie 76 (Safari and iPhone)
   - RFC 6455 (All latest browsers)
-  - TSL/SSL
+  - TLS/SSL
 
 <b>A Simple Echo Server Example</b>
 
@@ -52,7 +52,7 @@ Chat Server (open up multiple <i>websocket.html</i> files)
     python SimpleExampleServer.py --example chat
 
 
-<b>TSL/SSL Example<b>
+<b>TLS/SSL Example<b>
 
 1) Generate a certificate with key
 
