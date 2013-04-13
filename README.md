@@ -7,7 +7,7 @@ Supports
   - RFC 6455 (All latest browsers)
   - TLS/SSL
 
-<b>A Simple Echo Server Example</b>
+<h4>A Simple Echo Server Example</h4>
 
 1) Write the client code by extending WebSocket
 
@@ -37,7 +37,7 @@ Supports
 
 3) Open up <i>websocket.html</i> and connect to the server
 
-<b>Want to get up and running faster?</b>
+<h4>Want to get up and running faster?</h4>
 
 There is an example which provides a simple echo and chat server
 
@@ -52,7 +52,7 @@ Chat Server (open up multiple <i>websocket.html</i> files)
     python SimpleExampleServer.py --example chat
 
 
-<b>TLS/SSL Example<b>
+<h4>TLS/SSL Example</h4>
 
 1) Generate a certificate with key
 
@@ -85,6 +85,7 @@ def handleMessage(): gets called when there is an incoming message from the clie
  - self.data: bytearray payload or None if there was no payload
  - self.address: address port tuple of the endpoint
  - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)
+ - self.server.connections: map containing all the clients connected to the server
 
 def sendMessage(buffer): send some text or binary data to the client endpoint
  - sending a buffer as str() will send a text based WebSocket frame otherwise binary
