@@ -31,7 +31,7 @@ Supports
             print self.address, 'closed'
 
     server = SimpleWebSocketServer('', 8000, SimpleEcho)
-    server.serverforever()
+    server.serveforever()
  
 2) Run your code
 
@@ -81,7 +81,7 @@ def handleConnected(): called when handskake is complete
 def handleClose(): called when the endpoint is closed or there is an error
 
 def handleMessage(): gets called when there is an incoming message from the client endpoint
- - self.opcode: the WebSocket frame type (TEXT, BINARY, PING, PONG)
+ - self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)
  - self.data: bytearray payload or None if there was no payload
  - self.address: address port tuple of the endpoint
  - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)
