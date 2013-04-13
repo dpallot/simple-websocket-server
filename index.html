@@ -4,11 +4,11 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Simplewebsocketserver : SimpleWebSocketServer" />
+    <meta name="description" content="SimpleWebSocketServer : " />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Simplewebsocketserver</title>
+    <title>SimpleWebSocketServer</title>
   </head>
 
   <body>
@@ -18,8 +18,8 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/opiate/SimpleWebSocketServer">View on GitHub</a>
 
-          <h1 id="project_title">Simplewebsocketserver</h1>
-          <h2 id="project_tagline">SimpleWebSocketServer</h2>
+          <h1 id="project_title">SimpleWebSocketServer</h1>
+          <h2 id="project_tagline"></h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/opiate/SimpleWebSocketServer/zipball/master">Download this project as a .zip file</a>
@@ -31,39 +31,113 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+        <h2>A very simple WebSocket Server written in Python</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<h3>No package installation, just one file, so simple.</h3>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>Supports</p>
+
+<ul>
+<li>Hixie 76 (Safari and iPhone)</li>
+<li>RFC 6455 (All latest browsers)</li>
+<li>TSL/SSL</li>
+</ul><h4>A Simple Echo Server Example</h4>
+
+<p>1) Write the client code by extending WebSocket</p>
+
+<pre><code>from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
+
+class SimpleEcho(WebSocket):
+    def __init__(self, server, sock, address):
+        WebSocket.__init__(self, server, sock, address)
+
+    def handleMessage(self):
+        if self.data == None:
+            self.data = ''
+
+        # echo it back to client
+        self.sendMessage(str(self.data))
+
+    def handleConnected(self):
+        print self.address, 'connected'
+
+    def handleClose(self):
+        print self.address, 'closed'
+
+server = SimpleWebSocketServer('', 8000, SimpleEcho)
+server.serverforever()
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>2) Run your code</p>
 
-<h3>Designer Templates</h3>
+<p>3) Open up <i>websocket.html</i> and connect to the server</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<h4>Want to get up and running faster?</h4>
 
-<h3>Rather Drive Stick?</h3>
+<p>There is an example which provides a simple echo and chat server</p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Echo Server</p>
 
-<h3>Authors and Contributors</h3>
+<pre><code># echo server
+python SimpleExampleServer.py --example echo
+</code></pre>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Chat Server (open up multiple <i>websocket.html</i> files)</p>
 
-<h3>Support or Contact</h3>
+<pre><code># chat server
+python SimpleExampleServer.py --example chat
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h4>TSL/SSL Example</h4>
+
+<p>1) Generate a certificate with key</p>
+
+<pre><code>openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
+</code></pre>
+
+<p>2) Run the secure TSL/SSL server (in this case the cert.pem file is in the same directory)</p>
+
+<pre><code>python SimpleExampleServer.py --example chat --ssl 1 --cert ./cert.pem
+</code></pre>
+
+<p>3) Offer the certificate to the browser by serving <i>websocket.html</i> through https. 
+The HTTPS server will look for cert.pem in the local directory. 
+Ensure the <i>websocket.html</i> is also in the same directory to where the server is run. </p>
+
+<pre><code>sudo python SimpleHTTPSServer.py
+</code></pre>
+
+<p>4) Open a web browser to: <i>https://localhost:443/websocket.html</i></p>
+
+<p>5) Change <i>ws://localhost:8000/</i> to <i>wss://localhost:8000</i> and click connect. </p>
+
+<p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. </p>
+
+<h4>For the Programmers</h4>
+
+<p>def handleConnected(): called when handskake is complete</p>
+
+<p>def handleClose(): called when the endpoint is closed or there is an error</p>
+
+<p>def handleMessage(): gets called when there is an incoming message from the client endpoint</p>
+
+<ul>
+<li>self.opcode: the WebSocket frame type (TEXT, BINARY, PING, PONG)</li>
+<li>self.data: bytearray payload or None if there was no payload</li>
+<li>self.address: address port tuple of the endpoint</li>
+<li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)</li>
+</ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
+
+<ul>
+<li>sending a buffer as str() will send a text based WebSocket frame otherwise binary</li>
+</ul>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Simplewebsocketserver maintained by <a href="https://github.com/opiate">opiate</a></p>
+        <p class="copyright">SimpleWebSocketServer maintained by <a href="https://github.com/opiate">opiate</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
