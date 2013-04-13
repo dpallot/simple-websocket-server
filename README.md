@@ -1,5 +1,5 @@
 <h2>A very simple WebSocket Server written in Python</h2>
-<h3>No package installation, just one file, so simple.</h3>
+<h3>No package installation, just one file, enjoy</h3>
 
 
 Supports
