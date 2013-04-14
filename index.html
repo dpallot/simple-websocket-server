@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="SimpleWebSocketServer : " />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>SimpleWebSocketServer</title>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>SimpleWebSocketServer by opiate</title>
   </head>
 
   <body>
+    <div id="container">
+      <div class="inner">
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/opiate/SimpleWebSocketServer">View on GitHub</a>
-
-          <h1 id="project_title">SimpleWebSocketServer</h1>
-          <h2 id="project_tagline"></h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/opiate/SimpleWebSocketServer/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/opiate/SimpleWebSocketServer/tarball/master">Download this project as a tar.gz file</a>
-            </section>
+        <header>
+          <h1>SimpleWebSocketServer</h1>
+          <h2></h2>
         </header>
-    </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h2>A very simple WebSocket Server written in Python</h2>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/opiate/SimpleWebSocketServer/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/opiate/SimpleWebSocketServer/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/opiate/SimpleWebSocketServer" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h2>A very simple WebSocket Server written in Python</h2>
 
 <h3>No package installation, just one file, enjoy</h3>
 
-<p>Supports</p>
+<h5>Supports</h5>
 
 <ul>
 <li>Hixie 76 (Safari and iPhone)</li>
@@ -76,14 +76,12 @@ server.serveforever()
 
 <p>Echo Server</p>
 
-<pre><code># echo server
-python SimpleExampleServer.py --example echo
+<pre><code>python SimpleExampleServer.py --example echo
 </code></pre>
 
 <p>Chat Server (open up multiple <i>websocket.html</i> files)</p>
 
-<pre><code># chat server
-python SimpleExampleServer.py --example chat
+<pre><code>python SimpleExampleServer.py --example chat
 </code></pre>
 
 <h4>TLS/SSL Example</h4>
@@ -93,7 +91,7 @@ python SimpleExampleServer.py --example chat
 <pre><code>openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
 </code></pre>
 
-<p>2) Run the secure TLS/SSL server (in this case the cert.pem file is in the same directory)</p>
+<p>2) Run the secure TSL/SSL server (in this case the cert.pem file is in the same directory)</p>
 
 <pre><code>python SimpleExampleServer.py --example chat --ssl 1 --cert ./cert.pem
 </code></pre>
@@ -111,13 +109,13 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 
 <p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. </p>
 
-<p><b>For the Programmers</b></p>
+<h4>For the Programmers</h4>
 
-<p>def handleConnected(): called when handskake is complete</p>
+<p></p><h5>def handleConnected()</h5>: called when handskake is complete
 
-<p>def handleClose(): called when the endpoint is closed or there is an error</p>
+<p></p><h5>def handleClose()</h5>: called when the endpoint is closed or there is an error
 
-<p>def handleMessage(): gets called when there is an incoming message from the client endpoint</p>
+<p></p><h5>def handleMessage()</h5>: gets called when there is an incoming message from the client endpoint
 
 <ul>
 <li>self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)</li>
@@ -125,23 +123,20 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 <li>self.address: address port tuple of the endpoint</li>
 <li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)</li>
 <li>self.server.connections: map containing all the clients connected to the server</li>
-</ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
+</ul><p></p><h5>def sendMessage(buffer)</h5>: send some text or binary data to the client endpoint
 
 <ul>
-<li>str(buffer) will send a text based WebSocket frame otherwise binary</li>
+<li>sending a buffer as str() will send a text based WebSocket frame otherwise binary</li>
 </ul>
-      </section>
+        </section>
+
+        <footer>
+          SimpleWebSocketServer is maintained by <a href="https://github.com/opiate">opiate</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">SimpleWebSocketServer maintained by <a href="https://github.com/opiate">opiate</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
   </body>
 </html>
