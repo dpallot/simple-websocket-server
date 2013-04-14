@@ -42,12 +42,10 @@ There is an example which provides a simple echo and chat server
 
 Echo Server
 
-    # echo server
     python SimpleExampleServer.py --example echo
 
 Chat Server (open up multiple <i>websocket.html</i> files)
     
-    # chat server
     python SimpleExampleServer.py --example chat
 
 
