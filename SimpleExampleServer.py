@@ -4,8 +4,6 @@ from optparse import OptionParser
 
 
 class SimpleEcho(WebSocket):
-	def __init__(self, server, sock, address):
-		WebSocket.__init__(self, server, sock, address)
 
 	def handleMessage(self):
 		if self.data == None:
@@ -24,8 +22,6 @@ class SimpleEcho(WebSocket):
 
 
 class SimpleChat(WebSocket):
-	def __init__(self, server, sock, address):
-		WebSocket.__init__(self, server, sock, address)
 
 	def handleMessage(self):
 		if self.data == None:
