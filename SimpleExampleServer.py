@@ -6,7 +6,7 @@ from optparse import OptionParser
 class SimpleEcho(WebSocket):
 
 	def handleMessage(self):
-		if self.data == None:
+		if self.data is None:
 			self.data = ''
 		
 		try:
@@ -24,7 +24,7 @@ class SimpleEcho(WebSocket):
 class SimpleChat(WebSocket):
 
 	def handleMessage(self):
-		if self.data == None:
+		if self.data is None:
 			self.data = ''
 		
 		try:
@@ -62,6 +62,7 @@ if __name__ == "__main__":
 	parser.add_option("--example", default='echo', type='string', action="store", dest="example", help="echo, chat")
 	parser.add_option("--ssl", default=0, type='int', action="store", dest="ssl", help="ssl (1: on, 0: off (default))")
 	parser.add_option("--cert", default='./cert.pem', type='string', action="store", dest="cert", help="cert (./cert.pem)")
+	parser.add_option("--ver", default=ssl.PROTOCOL_TLSv1, type=int, action="store", dest="ver", help="ssl version")
 	
 	(options, args) = parser.parse_args()
 
@@ -70,7 +71,7 @@ if __name__ == "__main__":
 		cls = SimpleChat	
 
 	if options.ssl == 1:
-		server = SimpleSSLWebSocketServer(options.host, options.port, cls, './cert.pem', './cert.pem')
+		server = SimpleSSLWebSocketServer(options.host, options.port, cls, options.cert, options.cert, version=options.ver)
 	else:	
 		server = SimpleWebSocketServer(options.host, options.port, cls)
 

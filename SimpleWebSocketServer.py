@@ -34,7 +34,7 @@ class WebSocket(object):
 		"Upgrade: WebSocket\r\n"
 		"Connection: Upgrade\r\n"
 		"Sec-WebSocket-Origin: %(origin)s\r\n"
-		"Sec-WebSocket-Location: ws://%(host)s%(location)s\r\n\r\n"
+		"Sec-WebSocket-Location: %(type)s://%(host)s%(location)s\r\n\r\n"
 	)
 	
 	GUIDStr = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
@@ -74,7 +74,8 @@ class WebSocket(object):
 		self.lengtharray = None
 		self.index = 0
 		self.request = None
-		
+		self.usingssl = False
+
 		self.state = self.HEADERB1
 	
 
@@ -120,7 +121,7 @@ class WebSocket(object):
 	def handleData(self):		
 		
 		# do the HTTP header and handshake
-		if self.handshaked == False:
+		if self.handshaked is False:
 			
 			data = self.client.recv(self.headertoread)
 			
@@ -129,7 +130,7 @@ class WebSocket(object):
 				self.headerbuffer += data
 
 				# we need to read the entire 8 bytes of after the HTTP header, ensure we do
-				if self.readdraftkey == True:
+				if self.readdraftkey is True:
 					
 					self.draftkey += self.headerbuffer
 					read = self.headertoread - len(self.headerbuffer)
@@ -189,7 +190,7 @@ class WebSocket(object):
 			data = self.client.recv(2048)
 			if data:
 				for val in data:
-					if self.hixie76 == False:
+					if self.hixie76 is False:
 						self.parseMessage(ord(val))
 					else:
 						self.parseMessage_hixie76(ord(val))
@@ -213,7 +214,11 @@ class WebSocket(object):
 		key += struct.pack('>I', num2)
 		key += self.draftkey
 
-		response = self.hixiehandshakedStr % { 'origin' : self.request.headers['Origin'.lower()], 'host' : self.request.headers['Host'.lower()], 'location' : self.request.path }
+		typestr = 'ws'
+		if self.usingssl is True:
+			typestr = 'wss'
+
+		response = self.hixiehandshakedStr % { 'type' : typestr, 'origin' : self.request.headers['Origin'.lower()], 'host' : self.request.headers['Host'.lower()], 'location' : self.request.path }
 
 		self.sendBuffer(response)
 		self.sendBuffer(hashlib.md5(key).digest())
@@ -231,7 +236,7 @@ class WebSocket(object):
 	def sendClose(self):
 
 		msg = bytearray()
-		if self.hixie76 == False:
+		if self.hixie76 is False:
 			msg.append(0x88)
 			msg.append(0x00)
 			self.sendBuffer(msg)
@@ -254,12 +259,12 @@ class WebSocket(object):
 	#if s is a string then websocket TEXT is sent else BINARY
 	def sendMessage(self, s):
 		
-		if self.hixie76 == False:
+		if self.hixie76 is False:
 
 			header = bytearray()
 			isString = isinstance(s, str)
 
-			if isString == True: 
+			if isString is True: 
 				header.append(0x81)
 			else:
 				header.append(0x82)
@@ -341,7 +346,7 @@ class WebSocket(object):
 				self.length = length
 				
 				# if we have a mask we must read it
-				if self.hasmask == True:
+				if self.hasmask is True:
 					self.maskarray = bytearray()
 					self.state = self.MASK
 				else:
@@ -373,7 +378,7 @@ class WebSocket(object):
 			if len(self.lengtharray) == 2:
 				self.length = struct.unpack_from('!H', str(self.lengtharray))[0]
 				
-				if self.hasmask == True:
+				if self.hasmask is True:
 					self.maskarray = bytearray()
 					self.state = self.MASK
 				else:
@@ -397,7 +402,7 @@ class WebSocket(object):
 			if len(self.lengtharray) == 8:
 				self.length = struct.unpack_from('!Q', str(self.lengtharray))[0]
 				
-				if self.hasmask == True:
+				if self.hasmask is True:
 					self.maskarray = bytearray()
 					self.state = self.MASK
 				else:
@@ -435,7 +440,7 @@ class WebSocket(object):
 		
 		# PAYLOAD STATE
 		elif self.state == self.PAYLOAD:
-			if self.hasmask == True:
+			if self.hasmask is True:
 				self.data.append( byte ^ self.maskarray[self.index % 4] )
 			else:
 				self.data.append( byte )
@@ -460,8 +465,12 @@ class SimpleWebSocketServer(object):
 		self.connections = {}
 		self.listeners = [self.serversocket]
 
+
 	def decorateSocket(self, sock):
 		return sock
+
+	def constructWebSocket(self, sock, address):
+		return self.websocketclass(self, sock, address)
 
 	def close(self):
 		self.serversocket.close()
@@ -487,7 +496,7 @@ class SimpleWebSocketServer(object):
 						newsock.setblocking(0)
 						fileno = newsock.fileno()
 						self.listeners.append(fileno)
-						self.connections[fileno] = self.websocketclass(self, newsock, address)
+						self.connections[fileno] = self.constructWebSocket(newsock, address)
 					except Exception as n:
 						if sock != None:
 							sock.close()
@@ -539,7 +548,6 @@ class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 		self.keyfile = keyfile
 		self.version = version
 
-
 	def close(self):
 		super(SimpleSSLWebSocketServer, self).close()
 
@@ -550,6 +558,11 @@ class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 		                     keyfile=self.keyfile,
 		                     ssl_version=self.version)
 		return sslsock
+
+	def constructWebSocket(self, sock, address):
+		ws = self.websocketclass(self, sock, address)
+		ws.usingssl = True
+		return ws
 
 	def serveforever(self):
 		super(SimpleSSLWebSocketServer, self).serveforever()
