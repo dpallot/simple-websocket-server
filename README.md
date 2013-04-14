@@ -1,11 +1,12 @@
 <h2>A very simple WebSocket Server written in Python</h2>
 <h3>No package installation, just one file, enjoy</h3>
 
-
 Supports
   - Hixie 76 (Safari and iPhone)
   - RFC 6455 (All latest browsers)
   - TLS/SSL
+
+<h3><a href = http://opiate.github.io/SimpleWebSocketServer>Click for the fancy Website</a></h3>
 
 <h4>A Simple Echo Server Example</h4>
 
