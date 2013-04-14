@@ -48,8 +48,6 @@
 <pre><code>from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
 
 class SimpleEcho(WebSocket):
-    def __init__(self, server, sock, address):
-        WebSocket.__init__(self, server, sock, address)
 
     def handleMessage(self):
         if self.data == None:
@@ -95,7 +93,7 @@ python SimpleExampleServer.py --example chat
 <pre><code>openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
 </code></pre>
 
-<p>2) Run the secure TSL/SSL server (in this case the cert.pem file is in the same directory)</p>
+<p>2) Run the secure TLS/SSL server (in this case the cert.pem file is in the same directory)</p>
 
 <pre><code>python SimpleExampleServer.py --example chat --ssl 1 --cert ./cert.pem
 </code></pre>
@@ -130,7 +128,7 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 </ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
 
 <ul>
-<li>sending a buffer as str() will send a text based WebSocket frame otherwise binary</li>
+<li>str(buffer) will send a text based WebSocket frame otherwise binary</li>
 </ul>
       </section>
     </div>
