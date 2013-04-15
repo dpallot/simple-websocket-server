@@ -11,7 +11,7 @@ Supports
 <h4>A Simple Echo Server Example</h4>
 
 1) Write the client code by extending WebSocket
-
+`````python
     from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
     
     class SimpleEcho(WebSocket):
@@ -31,6 +31,7 @@ Supports
 
     server = SimpleWebSocketServer('', 8000, SimpleEcho)
     server.serveforever()
+`````
 
 2) Run your code
 
@@ -71,7 +72,7 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 
 Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. 
 
-<b>For the Programmers</b>
+<h4>For the Programmers</h4>
 
 def handleConnected(): called when handskake is complete
 
@@ -80,12 +81,12 @@ def handleClose(): called when the endpoint is closed or there is an error
 def handleMessage(): gets called when there is an incoming message from the client endpoint
  - self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)
  - self.data: bytearray payload or None if there was no payload
- - self.address: address port tuple of the endpoint
- - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)
+ - self.address: TCP address port tuple of the endpoint
+ - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler)
  - self.server.connections: map containing all the clients connected to the server
 
 def sendMessage(buffer): send some text or binary data to the client endpoint
- - sending a buffer as str() will send a text based WebSocket frame otherwise binary
+ - sending a buffer as str() will send a text based WebSocket frame otherwise a binary frame
  
-def sendClose() : send close frame to enpoint
+def sendClose() : send close frame to endpoint
  
