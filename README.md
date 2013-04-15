@@ -17,7 +17,7 @@ Supports
     class SimpleEcho(WebSocket):
         
         def handleMessage(self):
-            if self.data == None:
+            if self.data is None:
                 self.data = ''
                 
             # echo it back to client
