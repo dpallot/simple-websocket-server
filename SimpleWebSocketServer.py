@@ -1,5 +1,4 @@
 import SocketServer
-import re
 import hashlib
 import base64
 import socket
@@ -7,6 +6,8 @@ import struct
 import ssl
 import time
 import sys
+import errno
+import logging
 from BaseHTTPServer import BaseHTTPRequestHandler
 from StringIO import StringIO
 from select import select
@@ -78,6 +79,9 @@ class WebSocket(object):
 
 		self.state = self.HEADERB1
 	
+		# restrict the size of header and payload for security reasons
+		self.maxheader = 65536
+		self.maxpayload = 4194304
 
 	def close(self):
 		self.client.close()
@@ -104,7 +108,7 @@ class WebSocket(object):
 		# close
 		if self.opcode == self.CLOSE:
 			self.sendClose()
-			raise Exception("client closed")
+			raise Exception("received client close")
 		# ping
 		elif self.opcode == self.PING:
 			pass
@@ -129,9 +133,11 @@ class WebSocket(object):
 				# accumulate
 				self.headerbuffer += data
 
+				if len(self.headerbuffer) >= self.maxheader:
+					raise Exception('header exceeded allowable size')
+
 				# we need to read the entire 8 bytes of after the HTTP header, ensure we do
 				if self.readdraftkey is True:
-					
 					self.draftkey += self.headerbuffer
 					read = self.headertoread - len(self.headerbuffer)
 
@@ -152,7 +158,6 @@ class WebSocket(object):
 						read = len(self.headerbuffer) - index
 						# do we have all the 8 bytes we need?
 						if read < 8:
-							
 							self.headertoread = 8 - read
 							self.readdraftkey = True
 							if read > 0:
@@ -160,11 +165,9 @@ class WebSocket(object):
 						
 						else:
 							# get the key
-
 							self.draftkey += self.headerbuffer[index:index+8]
 							# complete hixie handshake
 							self.handshake_hixie76()
-							
 							
 					# handshake rfc 6455
 					elif self.request.headers.has_key('Sec-WebSocket-Key'.lower()):
@@ -245,15 +248,25 @@ class WebSocket(object):
 
 	def sendBuffer(self, buff):
 		size = len(buff)
-		tosend = len(buff)
+		tosend = size
 		index = 0
+
 		while tosend > 0:
-			# i should be able to send a bytearray
-			sent = self.client.send(str(buff[index:size]))
-			if sent == 0:
-				raise RuntimeError("socket connection broken")
-			index += sent
-			tosend -= sent
+			try:
+				# i should be able to send a bytearray
+				sent = self.client.send(str(buff[index:size]))
+				if sent == 0:
+					raise RuntimeError("socket connection broken")
+
+				index += sent
+				tosend -= sent
+
+			except socket.error as e:
+				# if we have full buffers then wait for them to drain and try again
+				if e.errno == errno.EAGAIN:
+					time.sleep(0.001)
+				else:
+					raise e
 
 	
 	#if s is a string then websocket TEXT is sent else BINARY
@@ -321,6 +334,9 @@ class WebSocket(object):
 					self.state = self.HEADERB1
 			else	:
 				self.data.append(byte)
+				# if length exceeds allowable size then we except and remove the connection
+				if len(self.data) >= self.maxpayload:
+					raise Exception('payload exceeded allowable size')
 
 
 	def parseMessage(self, byte):	
@@ -375,6 +391,10 @@ class WebSocket(object):
 		
 		elif self.state == self.LENGTHSHORT:
 			self.lengtharray.append(byte)
+
+			if len(self.lengtharray) > 2:
+				raise Exception('short length exceeded allowable size')
+
 			if len(self.lengtharray) == 2:
 				self.length = struct.unpack_from('!H', str(self.lengtharray))[0]
 				
@@ -399,9 +419,13 @@ class WebSocket(object):
 		elif self.state == self.LENGTHLONG:
 
 			self.lengtharray.append(byte)
+
+			if len(self.lengtharray) > 8:
+				raise Exception('long length exceeded allowable size')
+
 			if len(self.lengtharray) == 8:
 				self.length = struct.unpack_from('!Q', str(self.lengtharray))[0]
-				
+
 				if self.hasmask is True:
 					self.maskarray = bytearray()
 					self.state = self.MASK
@@ -423,6 +447,10 @@ class WebSocket(object):
 		# MASK STATE
 		elif self.state == self.MASK:
 			self.maskarray.append(byte)
+
+			if len(self.maskarray) > 4:
+				raise Exception('mask exceeded allowable size')
+
 			if len(self.maskarray) == 4:
 				# if there is no mask and no payload we are done
 				if self.length <= 0:
@@ -444,6 +472,11 @@ class WebSocket(object):
 				self.data.append( byte ^ self.maskarray[self.index % 4] )
 			else:
 				self.data.append( byte )
+
+			# if length exceeds allowable size then we except and remove the connection
+			if len(self.data) >= self.maxpayload:
+				raise Exception('payload exceeded allowable size')
+
 			# check if we have processed length bytes; if so we are done
 			if (self.index+1) == self.length:
 				try:
@@ -497,8 +530,12 @@ class SimpleWebSocketServer(object):
 						fileno = newsock.fileno()
 						self.listeners.append(fileno)
 						self.connections[fileno] = self.constructWebSocket(newsock, address)
+
 					except Exception as n:
-						if sock != None:
+
+						logging.debug(str(address) + ' ' + str(n))
+
+						if sock is not None:
 							sock.close()
 				else:
 					client = self.connections[ready]
@@ -508,7 +545,9 @@ class SimpleWebSocketServer(object):
 						client.handleData()
 
 					except Exception as n:
-				
+
+						logging.debug(str(client.address) + ' ' + str(n))
+
 						try:
 							client.handleClose()
 						except:
