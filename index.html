@@ -35,7 +35,7 @@
 
 <h3>No package installation, just one file, enjoy</h3>
 
-<h5>Supports</h5>
+<p>Supports</p>
 
 <ul>
 <li>Hixie 76 (Safari and iPhone)</li>
@@ -50,10 +50,10 @@
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
-        if self.data == None:
+        if self.data is None:
             self.data = ''
 
-        # echo it back to client
+        # echo message back to client
         self.sendMessage(str(self.data))
 
     def handleConnected(self):
@@ -109,13 +109,13 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 
 <p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. </p>
 
-<h4>For the Programmers</h4>
+<p></p><h4>For the Programmers
 
-<p></p><h5>def handleConnected()</h5>: called when handskake is complete
+</h4><p>def handleConnected(): called when handskake is complete</p>
 
-<p></p><h5>def handleClose()</h5>: called when the endpoint is closed or there is an error
+<p>def handleClose(): called when the endpoint is closed or there is an error</p>
 
-<p></p><h5>def handleMessage()</h5>: gets called when there is an incoming message from the client endpoint
+<p>def handleMessage(): gets called when there is an incoming message from the client endpoint</p>
 
 <ul>
 <li>self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)</li>
@@ -123,11 +123,11 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 <li>self.address: address port tuple of the endpoint</li>
 <li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)</li>
 <li>self.server.connections: map containing all the clients connected to the server</li>
-</ul><p></p><h5>def sendMessage(buffer)</h5>: send some text or binary data to the client endpoint
+</ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
 
 <ul>
 <li>sending a buffer as str() will send a text based WebSocket frame otherwise binary</li>
-</ul>
+</ul><p>def sendClose(): send close frame to enpoint</p>
         </section>
 
         <footer>
