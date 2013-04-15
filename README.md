@@ -20,7 +20,7 @@ Supports
             if self.data is None:
                 self.data = ''
                 
-            # echo it back to client
+            # echo message back to client
             self.sendMessage(str(self.data))
         
         def handleConnected(self):
@@ -31,7 +31,7 @@ Supports
 
     server = SimpleWebSocketServer('', 8000, SimpleEcho)
     server.serveforever()
- 
+
 2) Run your code
 
 3) Open up <i>websocket.html</i> and connect to the server
@@ -86,3 +86,6 @@ def handleMessage(): gets called when there is an incoming message from the clie
 
 def sendMessage(buffer): send some text or binary data to the client endpoint
  - sending a buffer as str() will send a text based WebSocket frame otherwise binary
+ 
+def sendClose() : send close frame to enpoint
+ 
