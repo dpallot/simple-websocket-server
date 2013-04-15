@@ -1,7 +1,8 @@
-import signal, sys, ssl
+import signal, sys, ssl, logging
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer, SimpleSSLWebSocketServer
 from optparse import OptionParser
 
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
 class SimpleEcho(WebSocket):
 
@@ -27,12 +28,12 @@ class SimpleChat(WebSocket):
 		if self.data is None:
 			self.data = ''
 		
-		try:
-			for client in self.server.connections.itervalues():
-				if client != self:
+		for client in self.server.connections.itervalues():
+			if client != self:
+				try:
 					client.sendMessage(str(self.address[0]) + ' - ' + str(self.data))
-		except Exception as n:
-			print n
+				except Exception as n:
+					print n
 
 
 	def handleConnected(self):
