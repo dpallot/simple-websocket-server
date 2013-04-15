@@ -1,39 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <title>SimpleWebSocketServer by opiate</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>SimpleWebSocketServer by opiate</title>
   </head>
-
   <body>
-    <div id="container">
-      <div class="inner">
+    <div class="wrapper">
+      <header class="without-description">
+        <h1>SimpleWebSocketServer</h1>
+        <p></p>
+        <p class="view"><a href="https://github.com/opiate/SimpleWebSocketServer">View the Project on GitHub <small>opiate/SimpleWebSocketServer</small></a></p>
+        <ul>
+          <li><a href="https://github.com/opiate/SimpleWebSocketServer/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/opiate/SimpleWebSocketServer/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/opiate/SimpleWebSocketServer">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>A very simple WebSocket Server written in Python</h2>
 
-        <header>
-          <h1>SimpleWebSocketServer</h1>
-          <h2></h2>
-        </header>
-
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/opiate/SimpleWebSocketServer/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/opiate/SimpleWebSocketServer/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/opiate/SimpleWebSocketServer" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <hr>
-
-        <section id="main_content">
-          <h2>A very simple WebSocket Server written in Python</h2>
-
-<h3>No package installation, just one file, enjoy</h3>
+<h3 color="red">No package installation, just a single file, enjoy!</h3>
 
 <p>Supports</p>
 
@@ -41,30 +37,30 @@
 <li>Hixie 76 (Safari and iPhone)</li>
 <li>RFC 6455 (All latest browsers)</li>
 <li>TLS/SSL</li>
-</ul><h4>A Simple Echo Server Example</h4>
+</ul><h3>A Simple Echo Server Example</h3>
 
 <p>1) Write the client code by extending WebSocket</p>
 
-<pre><code>from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
+<div class="highlight"><pre>    <span class="kn">from</span> <span class="nn">SimpleWebSocketServer</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">SimpleWebSocketServer</span>
 
-class SimpleEcho(WebSocket):
+    <span class="k">class</span> <span class="nc">SimpleEcho</span><span class="p">(</span><span class="n">WebSocket</span><span class="p">):</span>
 
-    def handleMessage(self):
-        if self.data is None:
-            self.data = ''
+        <span class="k">def</span> <span class="nf">handleMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">''</span>
 
-        # echo message back to client
-        self.sendMessage(str(self.data))
+            <span class="c"># echo message back to client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 
-    def handleConnected(self):
-        print self.address, 'connected'
+        <span class="k">def</span> <span class="nf">handleConnected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s">'connected'</span>
 
-    def handleClose(self):
-        print self.address, 'closed'
+        <span class="k">def</span> <span class="nf">handleClose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s">'closed'</span>
 
-server = SimpleWebSocketServer('', 8000, SimpleEcho)
-server.serveforever()
-</code></pre>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">SimpleWebSocketServer</span><span class="p">(</span><span class="s">''</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">SimpleEcho</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serveforever</span><span class="p">()</span>
+</pre></div>
 
 <p>2) Run your code</p>
 
@@ -84,7 +80,7 @@ server.serveforever()
 <pre><code>python SimpleExampleServer.py --example chat
 </code></pre>
 
-<h4>TLS/SSL Example</h4>
+<h3>TLS/SSL Example</h3>
 
 <p>1) Generate a certificate with key</p>
 
@@ -109,9 +105,9 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 
 <p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. </p>
 
-<p></p><h4>For the Programmers
+<h3>For the Programmers</h3>
 
-</h4><p>def handleConnected(): called when handskake is complete</p>
+<p>def handleConnected(): called when handskake is complete</p>
 
 <p>def handleClose(): called when the endpoint is closed or there is an error</p>
 
@@ -120,23 +116,21 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 <ul>
 <li>self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)</li>
 <li>self.data: bytearray payload or None if there was no payload</li>
-<li>self.address: address port tuple of the endpoint</li>
-<li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler for its use)</li>
+<li>self.address: TCP address port tuple of the endpoint</li>
+<li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler)</li>
 <li>self.server.connections: map containing all the clients connected to the server</li>
 </ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
 
 <ul>
-<li>sending a buffer as str() will send a text based WebSocket frame otherwise binary</li>
-</ul><p>def sendClose(): send close frame to enpoint</p>
-        </section>
-
-        <footer>
-          SimpleWebSocketServer is maintained by <a href="https://github.com/opiate">opiate</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-        
-      </div>
+<li>sending a buffer as str() will send a text based WebSocket frame otherwise a binary frame</li>
+</ul><p>def sendClose() : send close frame to endpoint</p>
+      </section>
     </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/opiate">opiate</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
   </body>
 </html>
