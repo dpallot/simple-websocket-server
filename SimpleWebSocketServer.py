@@ -298,12 +298,12 @@ class WebSocket(object):
 				b2 |= 127
 				header.append(b2)
 				header.extend(struct.pack("!Q", length))
-		
-			self.sendBuffer(header)
-			header = None
 
 			if length > 0:
-				self.sendBuffer(s)
+				self.sendBuffer(header + s) 
+			else:
+				self.sendBuffer(header)
+			header = None
 
 		else:
 			msg = bytearray()			
