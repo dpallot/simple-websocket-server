@@ -551,8 +551,7 @@ class SimpleWebSocketServer(object):
                      sock.close()
             else:
                client = self.connections[ready]
-               fileno = client.client.fileno()
-            
+
                try:
                   client.handleData()
 
@@ -567,7 +566,7 @@ class SimpleWebSocketServer(object):
 
                   client.close()
 
-                  del self.connections[fileno]
+                  del self.connections[ready]
                   self.listeners.remove(ready)
       
          for failed in xList:
@@ -576,7 +575,6 @@ class SimpleWebSocketServer(object):
                raise Exception("server socket failed")
             else:
                client = self.connections[failed]
-               fileno = client.client.fileno()
 
                try:
                   client.handleClose()
@@ -585,7 +583,7 @@ class SimpleWebSocketServer(object):
 
                client.close()
 
-               del self.connections[fileno]
+               del self.connections[failed]
                self.listeners.remove(failed)
                
 
