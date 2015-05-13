@@ -1,4 +1,4 @@
-<h2>A very simple WebSocket Server written in Python</h2>
+<h2>A Simple Websocket Server written in Python</h2>
 
 Supports
   - RFC 6455 (All latest browsers)
@@ -65,21 +65,21 @@ Note: if you are having problems connecting, ensure that the certificate is adde
 
 <h4>For the Programmers</h4>
 
-def handleConnected(): called when handskake is complete
+handleConnected: called when handskake is complete
  - self.address: TCP address port tuple of the endpoint
 
-def handleClose(): called when the endpoint is closed or there is an error
+handleClose: called when the endpoint is closed or there is an error
 
-def handleMessage(): gets called when there is an incoming message from the client endpoint
+handleMessage: gets called when there is an incoming message from the client endpoint
  - self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)
  - self.data: bytearray (BINARY frame) or unicode payload (TEXT frame)  
  - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler)
  
-def sendMessage(data): send some text or binary data to the client endpoint
+sendMessage: send some text or binary data to the client endpoint
  - sending data as a unicode object will send a TEXT frame
  - sending data as a bytearray object will send a BINARY frame
  
-def sendClose() : send close frame to endpoint
+sendClose: send close frame to endpoint
 
 
 ---------------------
