@@ -12,7 +12,7 @@ import time
 import sys
 import errno
 import codecs
-import Queue
+from collections import deque
 from BaseHTTPServer import BaseHTTPRequestHandler
 from StringIO import StringIO
 from select import select
@@ -81,7 +81,7 @@ class WebSocket(object):
       self.frag_buffer = None
       self.frag_decoder = codecs.getincrementaldecoder('utf-8')(errors='strict')
       self.closed = False
-      self.sendq = Queue.Queue()
+      self.sendq = deque()
       
       self.state = HEADERB1
    
@@ -151,7 +151,7 @@ class WebSocket(object):
             status = 1002
 
          self.close(status, reason)
-         raise Exception("received client close")
+         #raise Exception("received client close")
       
       if self.fin == 0:
             if self.opcode != STREAM:
@@ -245,7 +245,7 @@ class WebSocket(object):
                if self.request.headers.has_key('Sec-WebSocket-Key'.lower()):
                   key = self.request.headers['Sec-WebSocket-Key'.lower()]
                   hStr = HANDSHAKE_STR % { 'acceptstr' :  base64.b64encode(hashlib.sha1(key + GUID_STR).digest()) }
-                  self._sendBuffer(hStr)
+                  self.sendq.append((BINARY, hStr))
                   self.handshaked = True
                   self.headerbuffer = ''
                   self.handleConnected()
@@ -280,7 +280,7 @@ class WebSocket(object):
             else:
                 close_msg.extend(reason)
     
-            self._sendMessage(False, CLOSE, str(close_msg), False)
+            self._sendMessage(False, CLOSE, str(close_msg))
           
        finally:
             self.closed = True
@@ -289,24 +289,27 @@ class WebSocket(object):
    def _sendBuffer(self, buff):
       size = len(buff)
       tosend = size
-      index = 0
+      already_sent = 0
 
       while tosend > 0:
          try:
             # i should be able to send a bytearray
-            sent = self.client.send(buff[index:size])
+            sent = self.client.send(buff[already_sent:])
             if sent == 0:
                raise RuntimeError("socket connection broken")
 
-            index += sent
+            already_sent += sent
             tosend -= sent
 
          except socket.error as e:
             # if we have full buffers then wait for them to drain and try again
             if e.errno == errno.EAGAIN:
-               time.sleep(0.001)
+               #time.sleep(0.001)
+               return buff[already_sent:]
             else:
                raise e
+           
+      return None
 
    def sendFragmentStart(self, data):
       """
@@ -353,7 +356,7 @@ class WebSocket(object):
       self._sendMessage(False, opcode, data)
    
 
-   def _sendMessage(self, fin, opcode, data, useq = True):
+   def _sendMessage(self, fin, opcode, data):
         header = bytearray()
         b1 = 0
         b2 = 0
@@ -387,10 +390,8 @@ class WebSocket(object):
         else:
            payload = str(header)
 
-        if useq is True:
-            self.sendq.put(payload)
-        else:
-            self._sendBuffer(payload)
+        self.sendq.append((opcode, payload))
+        
 
    def _parseMessage(self, byte):	
       # read in the header
@@ -580,15 +581,24 @@ class SimpleWebSocketServer(object):
 
    def serveforever(self):
       while True:
-         rList, wList, xList = select(self.listeners, self.listeners, self.listeners, 1)	
+         rList, wList, xList = select(self.listeners, self.listeners, self.listeners, 3)	
          
          for ready in wList:
             client = None
             try:
                client = self.connections[ready]
-               while not client.sendq.empty():
-                  client._sendBuffer(client.sendq.get())    
+               while client.sendq:
+                  opcode, payload = client.sendq.popleft()
+                  remaining = client._sendBuffer(payload)
+                  if remaining is not None:
+                      client.sendq.appendleft((opcode, remaining))
+                      break
+                  else:
+                      if opcode == CLOSE:
+                         raise Exception("received client close")
+                      
             except Exception as n:
+    
                if client:
                   client.client.close()
                   
