@@ -11,7 +11,7 @@ Passes Autobahn Websocket Testsuite
     from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
     
     class SimpleEcho(WebSocket):
-
+    
         def handleMessage(self):
             # echo message back to client
             self.sendMessage(self.data)
@@ -33,22 +33,22 @@ Open <i>websocket.html</i> and connect to the server.
     clients = []
     class SimpleChat(WebSocket):
 
-    def handleMessage(self):
-      for client in list(clients):
-         if client != self:
-            client.sendMessage(self.address[0] + ' - ' + self.data)
-
-    def handleConnected(self):
-       print self.address, 'connected'
+        def handleMessage(self):
           for client in list(clients):
-             client.sendMessage(self.address[0] + u' - connected')
-       clients.append(self)
+             if client != self:
+                client.sendMessage(self.address[0] + ' - ' + self.data)
 
-    def handleClose(self):
-       clients.remove(self)
-       print self.address, 'closed'
-       for client in list(clients):
-          client.sendMessage(self.address[0] + u' - disconnected')
+        def handleConnected(self):
+           print self.address, 'connected'
+              for client in list(clients):
+                 client.sendMessage(self.address[0] + u' - connected')
+           clients.append(self)
+
+        def handleClose(self):
+           clients.remove(self)
+           print self.address, 'closed'
+           for client in list(clients):
+              client.sendMessage(self.address[0] + u' - disconnected')
 `````
 Open multiple <i>websocket.html</i> and connect to the server.
 
