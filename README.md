@@ -6,10 +6,7 @@
 
 <h4>Echo Server Example</h4>
 `````python
-from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
-
 class SimpleEcho(WebSocket):
-
     def handleMessage(self):
         # echo message back to client
         self.sendMessage(self.data)
@@ -30,7 +27,6 @@ Open <i>websocket.html</i> and connect to the server.
 `````python
 clients = []
 class SimpleChat(WebSocket):
-
     def handleMessage(self):
        for client in clients:
           if client != self:
