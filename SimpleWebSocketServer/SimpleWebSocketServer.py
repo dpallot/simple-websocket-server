@@ -8,7 +8,6 @@ import base64
 import socket
 import struct
 import ssl
-import time
 import sys
 import errno
 import codecs
@@ -151,75 +150,74 @@ class WebSocket(object):
             status = 1002
 
          self.close(status, reason)
-         #raise Exception("received client close")
+         return
       
-      if self.fin == 0:
-            if self.opcode != STREAM:
-                if self.opcode == PING or self.opcode == PONG:
-                    raise Exception('control messages can not be fragmented')
-                
-                self.frag_type = self.opcode
-                self.frag_start = True
-                self.frag_decoder.reset()
-                
-                if self.frag_type == TEXT:
-                    self.frag_buffer = u''
-                    utf_str = self.frag_decoder.decode(self.data, final = False)
-                    if utf_str:
-                        self.frag_buffer += utf_str
-                else:
-                    self.frag_buffer = bytearray()
-                    self.frag_buffer += self.data
-                    
-            else:
-                if self.frag_start is False:
-                    raise Exception('fragmentation protocol error')
-                
-                if self.frag_type == TEXT:
-                    utf_str = self.frag_decoder.decode(self.data, final = False)
-                    if utf_str:
-                        self.frag_buffer += utf_str
-                else:
-                    self.frag_buffer += self.data
+      elif self.fin == 0:
+          if self.opcode != STREAM:
+              if self.opcode == PING or self.opcode == PONG:
+                  raise Exception('control messages can not be fragmented')
+              
+              self.frag_type = self.opcode
+              self.frag_start = True
+              self.frag_decoder.reset()
+              
+              if self.frag_type == TEXT:
+                  self.frag_buffer = []
+                  utf_str = self.frag_decoder.decode(self.data, final = False)
+                  if utf_str:
+                      self.frag_buffer.append(utf_str)
+              else:
+                  self.frag_buffer = bytearray()
+                  self.frag_buffer.extend(self.data)
+                  
+          else:
+              if self.frag_start is False:
+                  raise Exception('fragmentation protocol error')
+              
+              if self.frag_type == TEXT:
+                  utf_str = self.frag_decoder.decode(self.data, final = False)
+                  if utf_str:
+                      self.frag_buffer.append(utf_str)
+              else:
+                  self.frag_buffer.extend(self.data)
                         
-      else:
-                            
-            if self.opcode == STREAM:
-                if self.frag_start is False:
-                    raise Exception('fragmentation protocol error')
-                
-                if self.frag_type == TEXT:
-                    utf_str = self.frag_decoder.decode(self.data, final = True)
-                    self.frag_buffer += utf_str
-                else:
-                    self.frag_buffer += self.data
-                
-                self.data = self.frag_buffer
+      else:            
+          if self.opcode == STREAM:
+              if self.frag_start is False:
+                  raise Exception('fragmentation protocol error')
+              
+              if self.frag_type == TEXT:
+                  utf_str = self.frag_decoder.decode(self.data, final = True)
+                  self.frag_buffer.append(utf_str)
+                  self.data = u''.join(self.frag_buffer)
+              else:
+                  self.frag_buffer.extend(self.data)
+                  self.data = self.frag_buffer
+              
+              self.handleMessage()
+              
+              self.frag_decoder.reset()    
+              self.frag_type = BINARY
+              self.frag_start = False
+              self.frag_buffer = None
+              
+          elif self.opcode == PING:
+              self._sendMessage(False, PONG, self.data)
+              
+          elif self.opcode == PONG:
+              pass
           
-                self.handleMessage()
-                
-                self.frag_decoder.reset()    
-                self.frag_type = BINARY
-                self.frag_start = False
-                self.frag_buffer = None
-                
-            elif self.opcode == PING:
-                self._sendMessage(False, PONG, self.data)
-                
-            elif self.opcode == PONG:
-                pass
-            
-            else:
-                if self.frag_start is True:
-                    raise Exception('fragmentation protocol error')  
-        
-                if self.opcode == TEXT:
-                    try:
-                        self.data = self.data.decode('utf-8', errors='strict')
-                    except Exception as exp:
-                        raise Exception('invalid utf-8 payload')
-                        
-                self.handleMessage()
+          else:
+              if self.frag_start is True:
+                  raise Exception('fragmentation protocol error')  
+      
+              if self.opcode == TEXT:
+                  try:
+                      self.data = self.data.decode('utf-8', errors='strict')
+                  except Exception as exp:
+                      raise Exception('invalid utf-8 payload')
+                      
+              self.handleMessage()
 
 
    def _handleData(self):
@@ -255,13 +253,12 @@ class WebSocket(object):
                  
       # else do normal data		
       else:
-         data = self.client.recv(2048)
+         data = self.client.recv(8192)
          if not data:
             raise Exception("remote socket closed")
          
          for d in data:
             self._parseMessage(ord(d))
-
 
    def close(self, status = 1000, reason = u''):
        """
@@ -303,8 +300,7 @@ class WebSocket(object):
 
          except socket.error as e:
             # if we have full buffers then wait for them to drain and try again
-            if e.errno == errno.EAGAIN:
-               #time.sleep(0.001)
+            if e.errno in [errno.EAGAIN, errno.EWOULDBLOCK]:
                return buff[already_sent:]
             else:
                raise e
