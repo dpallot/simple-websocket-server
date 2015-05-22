@@ -47,6 +47,9 @@ class SimpleChat(WebSocket):
        print self.address, 'closed'
        for client in clients:
           client.sendMessage(self.address[0] + u' - disconnected')
+
+server = SimpleWebSocketServer('', 8000, SimpleChat)
+server.serveforever()
 `````
 Open multiple <i>websocket.html</i> and connect to the server.
 
