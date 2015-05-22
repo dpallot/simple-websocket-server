@@ -1,10 +1,8 @@
 <h2>A Simple Websocket Server written in Python</h2>
 
-Supports
-  - RFC 6455 (All latest browsers)
-  - TLS/SSL
-
-Passes Autobahn Websocket Testsuite 
+- RFC 6455 (All latest browsers)
+- TLS/SSL out of the box
+- Passes Autobahn Websocket Testsuite
 
 <h4>Echo Server Example</h4>
 `````python
