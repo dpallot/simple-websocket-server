@@ -1,72 +1,83 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>SimpleWebSocketServer by opiate</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <meta charset="UTF-8">
+    <title>Simple WebSocket Server by dpallot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
-    <div class="wrapper">
-      <header class="without-description">
-        <h1>SimpleWebSocketServer</h1>
-        <p></p>
-        <p class="view"><a href="https://github.com/opiate/SimpleWebSocketServer">View the Project on GitHub <small>opiate/SimpleWebSocketServer</small></a></p>
-        <ul>
-          <li><a href="https://github.com/opiate/SimpleWebSocketServer/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/opiate/SimpleWebSocketServer/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/opiate/SimpleWebSocketServer">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h2>A very simple WebSocket Server written in Python</h2>
+    <section class="page-header">
+      <h1 class="project-name">Simple WebSocket Server</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/dpallot/simple-websocket-server" class="btn">View on GitHub</a>
+      <a href="https://github.com/dpallot/simple-websocket-server/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/dpallot/simple-websocket-server/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-<h3 color="red">No package installation, just a single file, enjoy!</h3>
-
-<p>Supports</p>
+    <section class="main-content">
+      <h2>
+<a id="a-simple-websocket-server-written-in-python" class="anchor" href="#a-simple-websocket-server-written-in-python" aria-hidden="true"><span class="octicon octicon-link"></span></a>A Simple Websocket Server written in Python</h2>
 
 <ul>
-<li>Hixie 76 (Safari and iPhone)</li>
 <li>RFC 6455 (All latest browsers)</li>
-<li>TLS/SSL</li>
-</ul><h3>A Simple Echo Server Example</h3>
+<li>TLS/SSL out of the box</li>
+<li>Passes Autobahn Websocket Testsuite</li>
+</ul>
 
-<p>1) Write the client code by extending WebSocket</p>
+<h4>
+<a id="echo-server-example" class="anchor" href="#echo-server-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Echo Server Example</h4>
 
-<div class="highlight"><pre>    <span class="kn">from</span> <span class="nn">SimpleWebSocketServer</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">SimpleWebSocketServer</span>
+<div class="highlight highlight-python"><pre><span class="pl-k">class</span> <span class="pl-en">SimpleEcho</span>(<span class="pl-e">WebSocket</span>):
 
-    <span class="k">class</span> <span class="nc">SimpleEcho</span><span class="p">(</span><span class="n">WebSocket</span><span class="p">):</span>
+    <span class="pl-k">def</span> <span class="pl-en">handleMessage</span>(<span class="pl-smi">self</span>):
+        <span class="pl-c"># echo message back to client</span>
+        <span class="pl-v">self</span>.sendMessage(<span class="pl-v">self</span>.data)
 
-        <span class="k">def</span> <span class="nf">handleMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">''</span>
+    <span class="pl-k">def</span> <span class="pl-en">handleConnected</span>(<span class="pl-smi">self</span>):
+        <span class="pl-k">print</span> <span class="pl-v">self</span>.address, <span class="pl-s"><span class="pl-pds">'</span>connected<span class="pl-pds">'</span></span>
 
-            <span class="c"># echo message back to client</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+    <span class="pl-k">def</span> <span class="pl-en">handleClose</span>(<span class="pl-smi">self</span>):
+        <span class="pl-k">print</span> <span class="pl-v">self</span>.address, <span class="pl-s"><span class="pl-pds">'</span>closed<span class="pl-pds">'</span></span>
 
-        <span class="k">def</span> <span class="nf">handleConnected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s">'connected'</span>
+server <span class="pl-k">=</span> SimpleWebSocketServer(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>, <span class="pl-c1">8000</span>, SimpleEcho)
+server.serveforever()</pre></div>
 
-        <span class="k">def</span> <span class="nf">handleClose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s">'closed'</span>
+<p>Open <i>websocket.html</i> and connect to the server.</p>
 
-    <span class="n">server</span> <span class="o">=</span> <span class="n">SimpleWebSocketServer</span><span class="p">(</span><span class="s">''</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">SimpleEcho</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">serveforever</span><span class="p">()</span>
-</pre></div>
+<h4>
+<a id="chat-server-example" class="anchor" href="#chat-server-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chat Server Example</h4>
 
-<p>2) Run your code</p>
+<div class="highlight highlight-python"><pre>clients <span class="pl-k">=</span> []
+<span class="pl-k">class</span> <span class="pl-en">SimpleChat</span>(<span class="pl-e">WebSocket</span>):
 
-<p>3) Open up <i>websocket.html</i> and connect to the server</p>
+    <span class="pl-k">def</span> <span class="pl-en">handleMessage</span>(<span class="pl-smi">self</span>):
+       <span class="pl-k">for</span> client <span class="pl-k">in</span> clients:
+          <span class="pl-k">if</span> client <span class="pl-k">!=</span> <span class="pl-v">self</span>:
+             client.sendMessage(<span class="pl-v">self</span>.address[<span class="pl-c1">0</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> - <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-v">self</span>.data)
 
-<h4>Want to get up and running faster?</h4>
+    <span class="pl-k">def</span> <span class="pl-en">handleConnected</span>(<span class="pl-smi">self</span>):
+       <span class="pl-k">print</span> <span class="pl-v">self</span>.address, <span class="pl-s"><span class="pl-pds">'</span>connected<span class="pl-pds">'</span></span>
+       <span class="pl-k">for</span> client <span class="pl-k">in</span> clients:
+          client.sendMessage(<span class="pl-v">self</span>.address[<span class="pl-c1">0</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-k">u</span><span class="pl-pds">'</span> - connected<span class="pl-pds">'</span></span>)
+       clients.append(<span class="pl-v">self</span>)
+
+    <span class="pl-k">def</span> <span class="pl-en">handleClose</span>(<span class="pl-smi">self</span>):
+       clients.remove(<span class="pl-v">self</span>)
+       <span class="pl-k">print</span> <span class="pl-v">self</span>.address, <span class="pl-s"><span class="pl-pds">'</span>closed<span class="pl-pds">'</span></span>
+       <span class="pl-k">for</span> client <span class="pl-k">in</span> clients:
+          client.sendMessage(<span class="pl-v">self</span>.address[<span class="pl-c1">0</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-k">u</span><span class="pl-pds">'</span> - disconnected<span class="pl-pds">'</span></span>)
+
+server <span class="pl-k">=</span> SimpleWebSocketServer(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>, <span class="pl-c1">8000</span>, SimpleChat)
+server.serveforever()</pre></div>
+
+<p>Open multiple <i>websocket.html</i> and connect to the server.</p>
+
+<h4>
+<a id="want-to-get-up-and-running-faster" class="anchor" href="#want-to-get-up-and-running-faster" aria-hidden="true"><span class="octicon octicon-link"></span></a>Want to get up and running faster?</h4>
 
 <p>There is an example which provides a simple echo and chat server</p>
 
@@ -80,7 +91,8 @@
 <pre><code>python SimpleExampleServer.py --example chat
 </code></pre>
 
-<h3>TLS/SSL Example</h3>
+<h4>
+<a id="tlsssl-example" class="anchor" href="#tlsssl-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>TLS/SSL Example</h4>
 
 <p>1) Generate a certificate with key</p>
 
@@ -103,34 +115,50 @@ Ensure the <i>websocket.html</i> is also in the same directory to where the serv
 
 <p>5) Change <i>ws://localhost:8000/</i> to <i>wss://localhost:8000</i> and click connect. </p>
 
-<p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception https://localhost:8000 or whatever host:port pair you want to connect to. </p>
+<p>Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception <i>https://localhost:8000</i> or whatever host:port pair you want to connect to. </p>
 
-<h3>For the Programmers</h3>
+<h4>
+<a id="for-the-programmers" class="anchor" href="#for-the-programmers" aria-hidden="true"><span class="octicon octicon-link"></span></a>For the Programmers</h4>
 
-<p>def handleConnected(): called when handskake is complete</p>
+<p>handleConnected: called when handskake is complete</p>
 
-<p>def handleClose(): called when the endpoint is closed or there is an error</p>
+<ul>
+<li>self.address: TCP address port tuple of the endpoint</li>
+</ul>
 
-<p>def handleMessage(): gets called when there is an incoming message from the client endpoint</p>
+<p>handleClose: called when the endpoint is closed or there is an error</p>
+
+<p>handleMessage: gets called when there is an incoming message from the client endpoint</p>
 
 <ul>
 <li>self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)</li>
-<li>self.data: bytearray payload or None if there was no payload</li>
-<li>self.address: TCP address port tuple of the endpoint</li>
+<li>self.data: bytearray (BINARY frame) or unicode payload (TEXT frame)<br>
+</li>
 <li>self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler)</li>
-<li>self.server.connections: map containing all the clients connected to the server</li>
-</ul><p>def sendMessage(buffer): send some text or binary data to the client endpoint</p>
+</ul>
+
+<p>sendMessage: send some text or binary data to the client endpoint</p>
 
 <ul>
-<li>sending a buffer as str() will send a text based WebSocket frame otherwise a binary frame</li>
-</ul><p>def sendClose() : send close frame to endpoint</p>
-      </section>
-    </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/opiate">opiate</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+<li>sending data as a unicode object will send a TEXT frame</li>
+<li>sending data as a bytearray object will send a BINARY frame</li>
+</ul>
+
+<p>sendClose: send close frame to endpoint</p>
+
+<hr>
+
+<p>The MIT License (MIT)</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/dpallot/simple-websocket-server">Simple WebSocket Server</a> is maintained by <a href="https://github.com/dpallot">dpallot</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
   </body>
 </html>
+
