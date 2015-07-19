@@ -577,7 +577,16 @@ class SimpleWebSocketServer(object):
 
    def serveforever(self):
       while True:
-         rList, wList, xList = select(self.listeners, self.listeners, self.listeners, 3)	
+         writers = []
+         for fileno in self.listeners:
+            try:
+               client = self.connections[fileno]
+               if client.sendq:
+                  writers.append(fileno)
+            except Exception as n:
+               pass
+         
+         rList, wList, xList = select(self.listeners, writers, self.listeners)
          
          for ready in wList:
             client = None
