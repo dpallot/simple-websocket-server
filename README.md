@@ -1,10 +1,19 @@
-<h2>A Simple Websocket Server written in Python</h2>
+## A Simple Websocket Server written in Python
 
 - RFC 6455 (All latest browsers)
 - TLS/SSL out of the box
 - Passes Autobahn Websocket Testsuite
 
-<h4>Echo Server Example</h4>
+#### Installation
+
+You can install SimpleWebSocketServer by running the following command...
+
+`sudo pip install git+https://github.com/dpallot/simple-websocket-server.git`
+
+Or by downloading the repository and running `sudo python setup.py install`.  
+Installation via pip is suggested.
+
+#### Echo Server Example
 `````python
 class SimpleEcho(WebSocket):
 
@@ -22,9 +31,9 @@ server = SimpleWebSocketServer('', 8000, SimpleEcho)
 server.serveforever()
 `````
 
-Open <i>websocket.html</i> and connect to the server.
+Open *websocket.html* and connect to the server.
 
-<h4>Chat Server Example</h4>
+#### Chat Server Example
 `````python
 clients = []
 class SimpleChat(WebSocket):
@@ -49,9 +58,9 @@ class SimpleChat(WebSocket):
 server = SimpleWebSocketServer('', 8000, SimpleChat)
 server.serveforever()
 `````
-Open multiple <i>websocket.html</i> and connect to the server.
+Open multiple *websocket.html* and connect to the server.
 
-<h4>Want to get up and running faster?</h4>
+#### Want to get up and running faster?
 
 There is an example which provides a simple echo and chat server
 
@@ -59,12 +68,12 @@ Echo Server
 
     python SimpleExampleServer.py --example echo
 
-Chat Server (open up multiple <i>websocket.html</i> files)
+Chat Server (open up multiple *websocket.html* files)
     
     python SimpleExampleServer.py --example chat
 
 
-<h4>TLS/SSL Example</h4>
+#### TLS/SSL Example
 
 1) Generate a certificate with key
 
@@ -74,19 +83,19 @@ Chat Server (open up multiple <i>websocket.html</i> files)
 
     python SimpleExampleServer.py --example chat --ssl 1 --cert ./cert.pem
     
-3) Offer the certificate to the browser by serving <i>websocket.html</i> through https. 
+3) Offer the certificate to the browser by serving *websocket.html* through https. 
 The HTTPS server will look for cert.pem in the local directory. 
-Ensure the <i>websocket.html</i> is also in the same directory to where the server is run. 
+Ensure the *websocket.html* is also in the same directory to where the server is run. 
 
     sudo python SimpleHTTPSServer.py
 
-4) Open a web browser to: <i>https://localhost:443/websocket.html</i>
+4) Open a web browser to: *https://localhost:443/websocket.html*
 
-5) Change <i>ws://localhost:8000/</i> to <i>wss://localhost:8000</i> and click connect. 
+5) Change *ws://localhost:8000/* to *wss://localhost:8000* and click connect. 
 
-Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception <i>https://localhost:8000</i> or whatever host:port pair you want to connect to. 
+Note: if you are having problems connecting, ensure that the certificate is added in your browser against the exception *https://localhost:8000* or whatever host:port pair you want to connect to. 
 
-<h4>For the Programmers</h4>
+#### For the Programmers
 
 handleConnected: called when handskake is complete
  - self.address: TCP address port tuple of the endpoint
