@@ -550,7 +550,7 @@ class WebSocket(object):
 
 
 class SimpleWebSocketServer(object):
-   def __init__(self, host, port, websocketclass, selectInterval=None):
+   def __init__(self, host, port, websocketclass, selectInterval=1):
       self.websocketclass = websocketclass
       self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -587,11 +587,7 @@ class SimpleWebSocketServer(object):
             except Exception as n:
                pass
          
-         # Depending on the interval block forever or not!
-         if self.selectInterval:
-          rList, wList, xList = select(self.listeners, writers, self.listeners, self.selectInterval)
-         else:
-          rList, wList, xList = select(self.listeners, writers, self.listeners)
+         rList, wList, xList = select(self.listeners, writers, self.listeners, self.selectInterval)
          
          for ready in wList:
             client = None
