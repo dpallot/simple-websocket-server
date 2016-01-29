@@ -329,6 +329,17 @@ class WebSocket(object):
 
       return None
 
+   def _flush(self):
+      while self.sendq:
+         opcode, payload = self.sendq.popleft()
+         remaining = self._sendBuffer(payload)
+         if remaining is not None:
+            self.sendq.appendleft((opcode, remaining))
+            break
+         else:
+            if opcode == CLOSE:
+               raise Exception("received client close")
+
    def sendFragmentStart(self, data):
       """
           Send the start of a data fragment stream to a websocket client.
@@ -372,6 +383,17 @@ class WebSocket(object):
       if _check_unicode(data):
          opcode = TEXT
       self._sendMessage(False, opcode, data)
+
+   def sendMessageAndFlush(self, data):
+      """
+          Send websocket data frame to the client.
+          It also flushes the output buffer. (sending the message immediately)
+
+          If data is a unicode object then the frame is sent as Text.
+          If the data is a bytearray object then the frame is sent as Binary.
+      """
+      self.sendMessage(data)
+      self._flush()
 
 
    def _sendMessage(self, fin, opcode, data):
@@ -617,15 +639,7 @@ class SimpleWebSocketServer(object):
             client = None
             try:
                client = self.connections[ready]
-               while client.sendq:
-                  opcode, payload = client.sendq.popleft()
-                  remaining = client._sendBuffer(payload)
-                  if remaining is not None:
-                      client.sendq.appendleft((opcode, remaining))
-                      break
-                  else:
-                      if opcode == CLOSE:
-                         raise Exception("received client close")
+               client._flush()
 
             except Exception as n:
 
