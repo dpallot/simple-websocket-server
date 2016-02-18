@@ -718,19 +718,14 @@ class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 
       SimpleWebSocketServer.__init__(self, host, port, websocketclass)
 
-      self.cerfile = certfile
-      self.keyfile = keyfile
-      self.version = version
+      self.context = ssl.SSLContext(version)
+      self.context.load_cert_chain(certfile, keyfile)
 
    def close(self):
       super(SimpleSSLWebSocketServer, self).close()
 
    def _decorateSocket(self, sock):
-      sslsock = ssl.wrap_socket(sock,
-                           server_side=True,
-                           certfile=self.cerfile,
-                           keyfile=self.keyfile,
-                           ssl_version=self.version)
+      sslsock = self.context.wrap_socket(sock, server_side=True)
       return sslsock
 
    def _constructWebSocket(self, sock, address):
