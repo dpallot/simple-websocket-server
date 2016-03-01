@@ -16,6 +16,8 @@ Installation via pip is suggested.
 
 #### Echo Server Example
 `````python
+from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
@@ -36,6 +38,8 @@ Open *websocket.html* and connect to the server.
 
 #### Chat Server Example
 `````python
+from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+
 clients = []
 class SimpleChat(WebSocket):
 
