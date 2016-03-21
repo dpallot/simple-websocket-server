@@ -571,7 +571,7 @@ class WebSocket(object):
 
 
 class SimpleWebSocketServer(object):
-   def __init__(self, host, port, websocketclass, selectInterval = None):
+   def __init__(self, host, port, websocketclass, selectInterval = 0.1):
       self.websocketclass = websocketclass
       self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -714,9 +714,11 @@ class SimpleWebSocketServer(object):
 
 class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 
-   def __init__(self, host, port, websocketclass, certfile, keyfile, version = ssl.PROTOCOL_TLSv1):
+   def __init__(self, host, port, websocketclass, certfile,
+                keyfile, version = ssl.PROTOCOL_TLSv1, selectInterval = 0.1):
 
-      SimpleWebSocketServer.__init__(self, host, port, websocketclass)
+      SimpleWebSocketServer.__init__(self, host, port,
+                                        websocketclass, selectInterval)
 
       self.context = ssl.SSLContext(version)
       self.context.load_cert_chain(certfile, keyfile)
