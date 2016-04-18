@@ -1,1 +1,1 @@
-from SimpleWebSocketServer import *
+from .SimpleWebSocketServer import *
