@@ -3,7 +3,9 @@ The MIT License (MIT)
 Copyright (c) 2013 Dave P.
 '''
 
-import signal, sys, ssl
+import signal
+import sys
+import ssl
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer, SimpleSSLWebSocketServer
 from optparse import OptionParser
 
