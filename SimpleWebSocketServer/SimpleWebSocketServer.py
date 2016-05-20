@@ -1,6 +1,7 @@
 '''
 The MIT License (MIT)
 Copyright (c) 2013 Dave P.
+Asyncore addition by Arnaud Loonstra
 '''
 import sys
 VER = sys.version_info[0]
@@ -22,6 +23,7 @@ import errno
 import codecs
 from collections import deque
 from select import select
+import asyncore
 
 __all__ = ['WebSocket',
             'SimpleWebSocketServer',
@@ -692,3 +694,52 @@ class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 
    def serveforever(self):
       super(SimpleSSLWebSocketServer, self).serveforever()
+
+
+class AsyncoreWebSocketServer(asyncore.dispatcher):
+
+   def __init__(self, host, port, websockethandler):
+      asyncore.dispatcher.__init__(self)
+      self.host = host
+      self.port = port
+      self.handler = websockethandler
+      self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
+      self.set_reuse_addr()
+      self.bind((host, port))
+      self.listen(5)
+
+   def handle_accept(self):
+      try:
+         conn, addr = self.accept()
+      except socket.error:
+         print('warning: server accept() threw an exception')
+         return
+      except TypeError:
+         print('warning: server accept() threw EWOULDBLOCK')
+         return
+      # creates an instance of the handler class to handle the request/response
+      # on the incoming connexion
+      self.handler(self, conn, addr)
+
+
+class AsyncoreWebSocketServerHandler(WebSocket, asyncore.dispatcher):
+
+   def __init__(self, server, sock, address):
+      asyncore.dispatcher.__init__(self, sock)
+      WebSocket.__init__(self, server, sock, address)
+
+   def handle_read(self):
+      try:
+         self._handleData()
+         while self.sendq:
+            opcode, payload = self.sendq.popleft()
+            remaining = self._sendBuffer(payload)
+            if remaining is not None:
+                self.sendq.appendleft((opcode, remaining))
+                break
+            else:
+                if opcode == CLOSE:
+                   raise Exception('received client close')
+      except Exception as n:
+         asyncore.dispatcher.close(self)
+         self.handleClose()
