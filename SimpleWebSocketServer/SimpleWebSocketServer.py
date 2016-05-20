@@ -27,7 +27,9 @@ import asyncore
 
 __all__ = ['WebSocket',
             'SimpleWebSocketServer',
-            'SimpleSSLWebSocketServer']
+            'SimpleSSLWebSocketServer',
+            'AsyncoreWebSocketServer',
+            'AsyncoreWebSocketServerHandler']
 
 def _check_unicode(val):
     if VER >= 3:
