@@ -271,7 +271,7 @@ class WebSocket(object):
 
       # else do normal data
       else:
-         data = self.client.recv(8192)
+         data = self.client.recv(16384)
          if not data:
             raise Exception("remote socket closed")
 
