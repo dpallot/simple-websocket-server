@@ -363,7 +363,7 @@ class WebSocket(object):
       """
       self._sendMessage(False, STREAM, data)
 
-   def sendMessage(self, data, immediate = False):
+   def sendMessage(self, data, sync = False):
       """
           Send websocket data frame to the client.
 
@@ -373,10 +373,10 @@ class WebSocket(object):
       opcode = BINARY
       if _check_unicode(data):
          opcode = TEXT
-      self._sendMessage(False, opcode, data, immediate)
+      self._sendMessage(False, opcode, data, sync)
 
 
-   def _sendMessage(self, fin, opcode, data, immediate = False):
+   def _sendMessage(self, fin, opcode, data, sync = False):
 
         payload = bytearray()
 
@@ -409,7 +409,7 @@ class WebSocket(object):
         if length > 0:
            payload.extend(data)
 
-        if immediate:
+        if sync:
             self._sendBuffer(payload, True)
         else:
             self.sendq.append((opcode, payload))
