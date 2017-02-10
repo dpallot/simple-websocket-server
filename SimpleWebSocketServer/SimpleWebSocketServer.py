@@ -305,7 +305,7 @@ class WebSocket(object):
             self.closed = True
 
 
-   def _sendBuffer(self, buff):
+   def _sendBuffer(self, buff, send_all = False):
       size = len(buff)
       tosend = size
       already_sent = 0
@@ -323,6 +323,8 @@ class WebSocket(object):
          except socket.error as e:
             # if we have full buffers then wait for them to drain and try again
             if e.errno in [errno.EAGAIN, errno.EWOULDBLOCK]:
+               if send_all:
+                   continue
                return buff[already_sent:]
             else:
                raise e
@@ -361,7 +363,7 @@ class WebSocket(object):
       """
       self._sendMessage(False, STREAM, data)
 
-   def sendMessage(self, data):
+   def sendMessage(self, data, immediate = False):
       """
           Send websocket data frame to the client.
 
@@ -371,10 +373,10 @@ class WebSocket(object):
       opcode = BINARY
       if _check_unicode(data):
          opcode = TEXT
-      self._sendMessage(False, opcode, data)
+      self._sendMessage(False, opcode, data, immediate)
 
 
-   def _sendMessage(self, fin, opcode, data):
+   def _sendMessage(self, fin, opcode, data, immediate = False):
 
         payload = bytearray()
 
@@ -407,7 +409,10 @@ class WebSocket(object):
         if length > 0:
            payload.extend(data)
 
-        self.sendq.append((opcode, payload))
+        if immediate:
+            self._sendBuffer(payload, True)
+        else:
+            self.sendq.append((opcode, payload))
 
 
    def _parseMessage(self, byte):
