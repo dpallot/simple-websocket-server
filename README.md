@@ -25,10 +25,10 @@ class SimpleEcho(WebSocket):
         self.sendMessage(self.data)
 
     def handleConnected(self):
-        print self.address, 'connected'
+        print(self.address, 'connected')
 
     def handleClose(self):
-        print self.address, 'closed'
+        print(self.address, 'closed')
 
 server = SimpleWebSocketServer('', 8000, SimpleEcho)
 server.serveforever()
@@ -49,14 +49,14 @@ class SimpleChat(WebSocket):
              client.sendMessage(self.address[0] + u' - ' + self.data)
 
     def handleConnected(self):
-       print self.address, 'connected'
+       print(self.address, 'connected')
        for client in clients:
           client.sendMessage(self.address[0] + u' - connected')
        clients.append(self)
 
     def handleClose(self):
        clients.remove(self)
-       print self.address, 'closed'
+       print(self.address, 'closed')
        for client in clients:
           client.sendMessage(self.address[0] + u' - disconnected')
 
