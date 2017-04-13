@@ -594,8 +594,16 @@ class SimpleWebSocketServer(object):
 
       for desc, conn in self.connections.items():
          conn.close()
-         conn.handleClose()
+         self._handleClose(conn)
 
+   def _handleClose(self, client):
+      client.client.close()
+      # only call handleClose when we have a successful websocket connection
+      if client.handshaked:
+         try:
+            client.handleClose()
+         except:
+            pass
 
    def serveforever(self):
       while True:
@@ -626,8 +634,7 @@ class SimpleWebSocketServer(object):
                          raise Exception('received client close')
 
             except Exception as n:
-               client.client.close()
-               client.handleClose()
+               self._handleClose(client)
                del self.connections[ready]
                self.listeners.remove(ready)
 
@@ -650,8 +657,7 @@ class SimpleWebSocketServer(object):
                try:
                   client._handleData()
                except Exception as n:
-                  client.client.close()
-                  client.handleClose()
+                  self._handleClose(client)
                   del self.connections[ready]
                   self.listeners.remove(ready)
 
@@ -663,8 +669,7 @@ class SimpleWebSocketServer(object):
                if failed not in self.connections:
                   continue
                client = self.connections[failed]
-               client.client.close()
-               client.handleClose()
+               self._handleClose(client)
                del self.connections[failed]
                self.listeners.remove(failed)
 
