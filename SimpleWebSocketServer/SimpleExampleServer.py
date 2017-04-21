@@ -25,7 +25,7 @@ class SimpleChat(WebSocket):
 
    def handleMessage(self):
       for client in clients:
-         if client != self:
+         if client != self and client.request.path == self.request.path:
             client.sendMessage(self.address[0] + u' - ' + self.data)
 
    def handleConnected(self):
