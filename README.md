@@ -106,8 +106,10 @@ handleConnected: called when handshake is complete
  - self.address: TCP address port tuple of the endpoint
 
 handleClose: called when the endpoint is closed or there is an error
+ - self.address: TCP address port tuple of the endpoint
 
 handleMessage: gets called when there is an incoming message from the client endpoint
+ - self.address: TCP address port tuple of the endpoint
  - self.opcode: the WebSocket frame type (STREAM, TEXT, BINARY)
  - self.data: bytearray (BINARY frame) or unicode string payload (TEXT frame)  
  - self.request: HTTP details from the WebSocket handshake (refer to BaseHTTPRequestHandler)
