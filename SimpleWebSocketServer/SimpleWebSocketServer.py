@@ -454,7 +454,7 @@ class WebSocket(object):
                   try:
                      self._handlePacket()
                   finally:
-                     self.state = self.HEADERB1
+                     self.state = HEADERB1
                      self.data = bytearray()
 
                # we have no mask and some payload
