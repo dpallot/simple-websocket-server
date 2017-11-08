@@ -82,7 +82,7 @@ Chat Server (open up multiple *websocket.html* files)
 
 1) Generate a certificate with key
 
-    openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
+    openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout key.pem
 
 2) Run the secure TSL/SSL server (in this case the cert.pem file is in the same directory)
 
