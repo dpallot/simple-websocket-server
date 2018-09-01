@@ -370,9 +370,7 @@ class WebSocket(object):
           If data is a unicode object then the frame is sent as Text.
           If the data is a bytearray object then the frame is sent as Binary.
       """
-      opcode = BINARY
-      if _check_unicode(data):
-         opcode = TEXT
+      opcode = TEXT if isinstance(data, basestring if VER < 3 else str) else BINARY
       self._sendMessage(False, opcode, data)
 
 
