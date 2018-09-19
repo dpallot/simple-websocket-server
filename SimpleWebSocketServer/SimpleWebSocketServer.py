@@ -31,7 +31,7 @@ def _check_unicode(val):
     if VER >= 3:
         return isinstance(val, str)
     else:
-        return isinstance(val, unicode)
+        return isinstance(val, basestring)
 
 class HTTPRequest(BaseHTTPRequestHandler):
    def __init__(self, request_text):
@@ -370,7 +370,9 @@ class WebSocket(object):
           If data is a unicode object then the frame is sent as Text.
           If the data is a bytearray object then the frame is sent as Binary.
       """
-      opcode = TEXT if isinstance(data, basestring if VER < 3 else str) else BINARY
+      opcode = BINARY
+      if _check_unicode(data):
+         opcode = TEXT
       self._sendMessage(False, opcode, data)
 
 
