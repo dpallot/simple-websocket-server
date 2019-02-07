@@ -698,14 +698,17 @@ class SimpleWebSocketServer(object):
 
 class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 
-   def __init__(self, host, port, websocketclass, certfile,
-                keyfile, version = ssl.PROTOCOL_TLSv1, selectInterval = 0.1):
+   def __init__(self, host, port, websocketclass, certfile = None,
+                keyfile = None, version = ssl.PROTOCOL_TLSv1, selectInterval = 0.1, ssl_context = None):
 
       SimpleWebSocketServer.__init__(self, host, port,
                                         websocketclass, selectInterval)
 
-      self.context = ssl.SSLContext(version)
-      self.context.load_cert_chain(certfile, keyfile)
+      if ssl_context is None:
+         self.context = ssl.SSLContext(version)
+         self.context.load_cert_chain(certfile, keyfile)
+      else:
+         self.context = ssl_context
 
    def close(self):
       super(SimpleSSLWebSocketServer, self).close()
