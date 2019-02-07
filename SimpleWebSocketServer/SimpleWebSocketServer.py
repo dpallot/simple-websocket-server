@@ -575,9 +575,19 @@ class WebSocket(object):
 class SimpleWebSocketServer(object):
    def __init__(self, host, port, websocketclass, selectInterval = 0.1):
       self.websocketclass = websocketclass
-      self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+      if (host == ''):
+         host = None
+
+      if host is None:
+         fam = socket.AF_INET6
+      else:
+         fam = 0
+
+      hostInfo = socket.getaddrinfo(host, port, fam, socket.SOCK_STREAM, socket.IPPROTO_TCP, socket.AI_PASSIVE)
+      self.serversocket = socket.socket(hostInfo[0][0], hostInfo[0][1], hostInfo[0][2])
       self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-      self.serversocket.bind((host, port))
+      self.serversocket.bind(hostInfo[0][4])
       self.serversocket.listen(5)
       self.selectInterval = selectInterval
       self.connections = {}
