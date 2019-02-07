@@ -1,0 +1,6 @@
+include README.md
+include setup.py
+include SimpleWebSocketServer/SimpleExampleServer.py
+include SimpleWebSocketServer/SimpleHTTPSServer.py
+include SimpleWebSocketServer/SimpleWebSocketServer.py
+include SimpleWebSocketServer/__init__.py

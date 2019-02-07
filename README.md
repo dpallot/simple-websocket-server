@@ -9,7 +9,7 @@
 
 You can install SimpleWebSocketServer by running the following command...
 
-`sudo pip install git+https://github.com/dpallot/simple-websocket-server.git`
+`pip install SimpleWebSocketServer`
 
 Or by downloading the repository and running `sudo python setup.py install`.  
 Installation via pip is suggested.
