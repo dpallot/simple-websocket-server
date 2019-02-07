@@ -31,7 +31,7 @@ def _check_unicode(val):
     if VER >= 3:
         return isinstance(val, str)
     else:
-        return isinstance(val, unicode)
+        return isinstance(val, basestring)
 
 class HTTPRequest(BaseHTTPRequestHandler):
    def __init__(self, request_text):
