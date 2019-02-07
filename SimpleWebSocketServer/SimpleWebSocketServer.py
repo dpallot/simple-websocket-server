@@ -53,6 +53,15 @@ HANDSHAKE_STR = (
    "Sec-WebSocket-Accept: %(acceptstr)s\r\n\r\n"
 )
 
+FAILED_HANDSHAKE_STR = (
+   "HTTP/1.1 426 Upgrade Required\r\n"
+   "Upgrade: WebSocket\r\n"
+   "Connection: Upgrade\r\n"
+   "Sec-WebSocket-Version: 13\r\n"
+   "Content-Type: text/plain\r\n\r\n"
+   "This service requires use of the WebSocket protocol\r\n"
+)
+
 GUID_STR = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 
 STREAM = 0x0
@@ -267,6 +276,9 @@ class WebSocket(object):
                   self.handshaked = True
                   self.handleConnected()
                except Exception as e:
+                  hStr = FAILED_HANDSHAKE_STR
+                  self._sendBuffer(hStr.encode('ascii'), True)
+                  self.client.close()
                   raise Exception('handshake failed: %s', str(e))
 
       # else do normal data
