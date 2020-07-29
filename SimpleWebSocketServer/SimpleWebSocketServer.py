@@ -699,7 +699,7 @@ class SimpleWebSocketServer(object):
 class SimpleSSLWebSocketServer(SimpleWebSocketServer):
 
    def __init__(self, host, port, websocketclass, certfile = None,
-                keyfile = None, version = ssl.PROTOCOL_TLSv1, selectInterval = 0.1, ssl_context = None):
+                keyfile = None, version = ssl.PROTOCOL_TLSv1_2, selectInterval = 0.1, ssl_context = None):
 
       SimpleWebSocketServer.__init__(self, host, port,
                                         websocketclass, selectInterval)
