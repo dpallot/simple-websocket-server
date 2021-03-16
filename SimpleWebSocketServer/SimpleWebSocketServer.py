@@ -251,7 +251,11 @@ class WebSocket(object):
       # do the HTTP header and handshake
       if self.handshaked is False:
 
-         data = self.client.recv(self.headertoread)
+         try:
+            data = self.client.recv(self.headertoread)
+         except (ssl.SSLWantReadError, ssl.SSLWantWriteError):
+            # SSL socket not ready to read yet, wait and try again
+            return
          if not data:
             raise Exception('remote socket closed')
 
@@ -283,7 +287,11 @@ class WebSocket(object):
 
       # else do normal data
       else:
-         data = self.client.recv(16384)
+         try:
+            data = self.client.recv(16384)
+         except (ssl.SSLWantReadError, ssl.SSLWantWriteError):
+            # SSL socket not ready to read yet, wait and try again
+            return
          if not data:
             raise Exception("remote socket closed")
 
@@ -331,6 +339,12 @@ class WebSocket(object):
 
             already_sent += sent
             tosend -= sent
+
+         except (ssl.SSLWantReadError, ssl.SSLWantWriteError):
+            # SSL socket not ready to send yet, wait and try again
+            if send_all:
+               continue
+            return buff[already_sent:]
 
          except socket.error as e:
             # if we have full buffers then wait for them to drain and try again
