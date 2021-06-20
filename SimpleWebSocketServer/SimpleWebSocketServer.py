@@ -599,6 +599,12 @@ class SimpleWebSocketServer(object):
       hostInfo = socket.getaddrinfo(host, port, fam, socket.SOCK_STREAM, socket.IPPROTO_TCP, socket.AI_PASSIVE)
       self.serversocket = socket.socket(hostInfo[0][0], hostInfo[0][1], hostInfo[0][2])
       self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+      if host is None:
+         # bind on both IPv4 and IPv6 localhost 
+         # if we don't explicitly set this, the behaviour isn't guranteed on some platforms. e.g. Windows
+         self.serversocket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+
       self.serversocket.bind(hostInfo[0][4])
       self.serversocket.listen(5)
       self.selectInterval = selectInterval
